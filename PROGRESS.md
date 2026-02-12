@@ -5,7 +5,7 @@
 
 ## 現在のステータス
 
-**フェーズ: 0 - 初期セットアップ**
+**フェーズ: 1 - MVP 実装（コード作成済み、ビルド未確認）**
 **最終更新: 2026-02-12**
 
 ---
@@ -16,15 +16,15 @@
 - [x] Git リポジトリ作成
 - [x] README.md 作成（MVP 定義）
 - [x] PROGRESS.md 作成（本ファイル）
-- [ ] .gitignore 作成
-- [ ] Android プロジェクト生成（Jetpack Compose テンプレート）
-- [ ] 初回ビルド確認
+- [x] .gitignore 作成
+- [x] Android プロジェクト生成（Jetpack Compose テンプレート）
+- [ ] 初回ビルド確認（Android Studio で開いて確認）
 
 ### フェーズ 1: MVP 実装
-- [ ] 漢字入力用の TextField 配置
-- [ ] 拡大表示エリア（Text composable, 200sp+）
-- [ ] フォント切替ボタン（明朝 / ゴシック）
-- [ ] ViewModel 作成（入力文字・フォント状態管理）
+- [x] 漢字入力用の TextField 配置
+- [x] 拡大表示エリア（Text composable, 240sp）
+- [x] フォント切替ボタン（明朝 / ゴシック）- FilterChip 使用
+- [x] ViewModel 作成（入力文字・フォント状態管理）- StateFlow + MVVM
 - [ ] エミュレータで動作確認
 
 ### フェーズ 2: 品質・仕上げ
@@ -73,3 +73,4 @@
 
 ## メモ・決定事項
 - 2026-02-12: プロジェクト開始。MVP はシンプルに1画面構成とする。
+- 2026-02-12: Android プロジェクト構造 + MVP コードを生成。gradle-wrapper.jar は Android Studio が自動生成する。次のステップは Android Studio で開いてビルド確認。
