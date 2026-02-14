@@ -6,14 +6,8 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 
-enum class FontType(val label: String) {
-    SERIF("明朝"),
-    SANS_SERIF("ゴシック"),
-}
-
 data class KanjiZoomUiState(
     val inputText: String = "",
-    val fontType: FontType = FontType.SERIF,
 ) {
     val displayText: String
         get() = inputText
@@ -25,9 +19,5 @@ class MainViewModel : ViewModel() {
 
     fun onInputChanged(text: String) {
         _uiState.update { it.copy(inputText = text) }
-    }
-
-    fun onFontSelected(fontType: FontType) {
-        _uiState.update { it.copy(fontType = fontType) }
     }
 }

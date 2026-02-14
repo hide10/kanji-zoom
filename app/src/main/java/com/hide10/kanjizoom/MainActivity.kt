@@ -6,7 +6,6 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.gestures.rememberTransformableState
 import androidx.compose.foundation.gestures.transformable
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
@@ -18,7 +17,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.FilterChip
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
@@ -119,7 +117,7 @@ fun KanjiZoomScreen(
                 onValueChange = { viewModel.onInputChanged(it) },
                 textStyle = TextStyle(
                     fontSize = autoSizeSp,
-                    fontFamily = uiState.fontType.toFontFamily(),
+                    fontFamily = FontFamily.Serif,
                     textAlign = TextAlign.Center,
                     color = textColor,
                 ),
@@ -152,18 +150,7 @@ fun KanjiZoomScreen(
 
         Spacer(modifier = Modifier.height(8.dp))
 
-        Row(
-            horizontalArrangement = Arrangement.spacedBy(12.dp),
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            FontType.entries.forEach { fontType ->
-                FilterChip(
-                    selected = uiState.fontType == fontType,
-                    onClick = { viewModel.onFontSelected(fontType) },
-                    label = { Text(fontType.label) },
-                )
-            }
-
+        Row(verticalAlignment = Alignment.CenterVertically) {
             if (scale > 1f) {
                 OutlinedButton(
                     onClick = {
@@ -214,7 +201,3 @@ fun KanjiZoomScreen(
     }
 }
 
-private fun FontType.toFontFamily(): FontFamily = when (this) {
-    FontType.SERIF -> FontFamily.Serif
-    FontType.SANS_SERIF -> FontFamily.SansSerif
-}
