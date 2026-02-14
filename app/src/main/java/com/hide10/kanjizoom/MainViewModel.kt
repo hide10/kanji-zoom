@@ -15,8 +15,8 @@ data class KanjiZoomUiState(
     val inputText: String = "",
     val fontType: FontType = FontType.SERIF,
 ) {
-    val displayChar: String
-        get() = inputText.firstOrNull()?.toString() ?: ""
+    val displayText: String
+        get() = inputText
 }
 
 class MainViewModel : ViewModel() {
