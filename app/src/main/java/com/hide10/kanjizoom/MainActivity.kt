@@ -17,11 +17,13 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -36,6 +38,7 @@ import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily
@@ -66,6 +69,7 @@ fun KanjiZoomScreen(
     viewModel: MainViewModel = viewModel(),
 ) {
     val uiState by viewModel.uiState.collectAsState()
+    var showInfoDialog by remember { mutableStateOf(false) }
 
     var scale by remember { mutableFloatStateOf(1f) }
     var offset by remember { mutableStateOf(Offset.Zero) }
@@ -170,9 +174,43 @@ fun KanjiZoomScreen(
                     Text("リセット")
                 }
             }
+
+            Spacer(modifier = Modifier.weight(1f))
+
+            TextButton(onClick = { showInfoDialog = true }) {
+                Text("i", style = MaterialTheme.typography.titleMedium)
+            }
         }
 
         Spacer(modifier = Modifier.height(8.dp))
+    }
+
+    if (showInfoDialog) {
+        val context = LocalContext.current
+        val versionName = remember {
+            context.packageManager.getPackageInfo(context.packageName, 0).versionName ?: "-"
+        }
+        AlertDialog(
+            onDismissRequest = { showInfoDialog = false },
+            title = { Text("漢字ズーム") },
+            text = {
+                Column {
+                    Text("バージョン: $versionName")
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Text("漢字を大きく表示して細部を確認できるアプリです。")
+                    Spacer(modifier = Modifier.height(4.dp))
+                    Text("操作方法:", style = MaterialTheme.typography.labelLarge)
+                    Text("・タップして文字を入力")
+                    Text("・ピンチで拡大・縮小")
+                    Text("・拡大中にドラッグで移動")
+                }
+            },
+            confirmButton = {
+                TextButton(onClick = { showInfoDialog = false }) {
+                    Text("閉じる")
+                }
+            },
+        )
     }
 }
 
