@@ -18,7 +18,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -151,17 +150,6 @@ fun KanjiZoomScreen(
         Spacer(modifier = Modifier.height(8.dp))
 
         Row(verticalAlignment = Alignment.CenterVertically) {
-            if (scale > 1f) {
-                OutlinedButton(
-                    onClick = {
-                        scale = 1f
-                        offset = Offset.Zero
-                    },
-                ) {
-                    Text("リセット")
-                }
-            }
-
             Spacer(modifier = Modifier.weight(1f))
 
             TextButton(onClick = { showInfoDialog = true }) {
