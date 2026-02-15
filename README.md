@@ -17,7 +17,7 @@
 ### インストール方法
 
 1. Android 端末で [Releases ページ](https://github.com/hide10/kanji-zoom/releases) にアクセス
-2. 最新リリースの `app-debug.apk` をダウンロード
+2. 最新リリースの `kanji-zoom-v*.apk` をダウンロード
 3. ダウンロード完了後、ファイルを開く
 4. 「提供元不明のアプリのインストールを許可しますか？」と表示されたら許可する
 5. インストールをタップ
