@@ -1,0 +1,6 @@
+Bundled stroke-order data uses KanjiVG by Ulrich Apel.
+Source: https://kanjivg.tagaini.net/
+License: CC BY-SA 3.0
+License text: https://creativecommons.org/licenses/by-sa/3.0/
+
+This app bundles selected KanjiVG SVG files for offline stroke-order display.

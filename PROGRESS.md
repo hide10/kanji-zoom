@@ -5,8 +5,8 @@
 
 ## 現在のステータス
 
-**フェーズ: 2.5 完了 → 課金実装・リリース準備へ**
-**最終更新: 2026-02-15**
+**フェーズ: 3 進行中 → GitHub Releases 公開準備**
+**最終更新: 2026-04-04**
 
 ---
 
@@ -37,42 +37,36 @@
 
 ### フェーズ 2.5: 追加機能（GitHub Issues で管理）
 - [ ] #1 買い切り課金（機能制限なし使用期限付きトライアル → 買い切りで無期限）
-- [ ] #2 書き順表示機能
+- [x] #2 書き順表示機能
 
 ### フェーズ 3: リリース準備
-- [ ] Google Play Developer アカウント登録（$25 一回払い）
-- [ ] アプリ署名鍵の生成（upload keystore）
-- [ ] リリースビルド作成（AAB 形式）
+- [ ] アプリ署名鍵の生成（GitHub Releases 用 keystore）
+- [x] GitHub Releases 自動公開 workflow 作成
+- [ ] GitHub Actions Secrets 登録
+- [ ] 初回タグ公開 (`v*`)
 - [ ] プライバシーポリシー作成（個人情報を扱わない旨）
-- [ ] スクリーンショット撮影（スマホ・タブレット各1枚以上）
+- [ ] スクリーンショット撮影（README / 紹介ページ用）
 
-### フェーズ 4: Google Play 公開
-- [ ] Google Play Console でアプリ作成
-- [ ] ストア掲載情報入力（タイトル・説明・カテゴリ）
-- [ ] コンテンツレーティング質問票の回答
-- [ ] AAB アップロード
-- [ ] 内部テスト → クローズドテスト → 製品版リリース
-- [ ] 審査通過・公開完了
+### フェーズ 4: GitHub Releases 公開
+- [ ] リリースノート確認
+- [ ] APK ダウンロード確認
+- [ ] 実機インストール確認
+- [ ] リポジトリ公開可否の判断
 
 ---
 
 ## 各フェーズの補足
 
-### Google Play 公開に必要なもの（フェーズ 3-4）
-1. **Google Play Developer アカウント** - Google アカウント + $25
-2. **署名鍵** - `keytool` で生成、紛失厳禁
-3. **AAB ファイル** - `./gradlew bundleRelease` で生成
-4. **プライバシーポリシー** - URL として公開する必要あり（GitHub Pages 等）
-5. **ストアアセット**
-   - アプリアイコン: 512x512 PNG → `ic_launcher-playstore.png` 作成済み
-   - スクリーンショット: 最低2枚
-   - フィーチャーグラフィック: 1024x500 PNG
-6. **コンテンツレーティング** - IARC 質問票に回答
+### GitHub Releases 公開に必要なもの（フェーズ 3-4）
+1. **署名鍵** - `keytool` で生成、紛失厳禁
+2. **GitHub Actions Secrets** - keystore とパスワード類を登録
+3. **Release APK** - `assembleRelease` で生成
+4. **タグ運用** - `v1.1.6` のように tag を切って公開
+5. **公開導線** - README か紹介ページから Releases へ誘導
 
 ### リリースまでの典型的な所要時間
-- 内部テスト: 即時公開
-- クローズドテスト: 数時間〜1日
-- 製品版: 審査に数日（初回は最大7日）
+- GitHub Releases: tag push 後に数分
+- README 反映: push 後すぐ
 
 ---
 
@@ -87,7 +81,7 @@
 | Target SDK | 35 (Android 15) |
 | フォント | Serif 固定（Noto Serif CJK） |
 | パッケージ | com.hide10.kanjizoom |
-| バージョン | 1.0.0 (versionCode: 1) |
+| バージョン | 1.1.6 (versionCode: 8) |
 
 ---
 
@@ -98,5 +92,7 @@
 - 2026-02-15: 機能改善実装完了。複数文字対応、自動拡縮、ピンチズーム、部分拡大、入力表示一体化。
 - 2026-02-15: フォント切替廃止 → 明朝体固定。リセットボタン廃止。アイコンを青+「漢」に変更。
 - 2026-02-15: GitHub Issues 作成。#1 買い切り課金、#2 書き順表示。
+- 2026-04-03: 書き順モードを実装。KanjiVG ベースの常用漢字 SVG を assets に同梱し、先頭1文字の筆順アニメを追加。
+- 2026-04-04: GitHub Releases 配布に切り替え。signed release APK を GitHub Actions で公開する workflow を追加。
 - 注意: 開発環境は WSL2 だが、Android Studio は Windows 側で実行。ファイル編集は `/mnt/c/Users/hide1/projects/kanji-zoom` 経由で行い、WSL 側 `/home/hide10/kanji-zoom` に同期してコミット・プッシュする。
 - GitHub リポジトリ: https://github.com/hide10/kanji-zoom (private)
