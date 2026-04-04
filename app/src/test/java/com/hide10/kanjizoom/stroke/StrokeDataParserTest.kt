@@ -31,10 +31,17 @@ class StrokeDataParserTest {
     fun `parse svg ignores external doctype references`() {
         val parsed = StrokeDataParser.parseSvg(
             svgContent = """
-                <!DOCTYPE svg SYSTEM "file:///missing-svg10.dtd">
+                <!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.0//EN" "file:///missing-svg10.dtd" [
+                <!ATTLIST g
+                xmlns:kvg CDATA #FIXED "http://kanjivg.tagaini.net"
+                kvg:element CDATA #IMPLIED >
+                <!ATTLIST path
+                xmlns:kvg CDATA #FIXED "http://kanjivg.tagaini.net"
+                kvg:type CDATA #IMPLIED >
+                ]>
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 109 109">
-                  <g>
-                    <path d="M10,10 L20,20" />
+                  <g id="kvg:StrokePaths_06f22" kvg:element="漢">
+                    <path kvg:type="㇐" d="M10,10 L20,20" />
                   </g>
                 </svg>
             """.trimIndent(),

@@ -35,7 +35,6 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
-import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -46,9 +45,7 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.graphics.graphicsLayer
-import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
@@ -89,7 +86,6 @@ fun KanjiZoomScreen(
     val hasStrokeData = uiState.strokeCharacterData != null
     val enableTransform = !isStrokeMode
     var showInfoDialog by remember { mutableStateOf(false) }
-    var strokeModeCardHeightPx by remember { mutableIntStateOf(0) }
 
     var scale by remember { mutableFloatStateOf(1f) }
     var offset by remember { mutableStateOf(Offset.Zero) }
@@ -132,48 +128,16 @@ fun KanjiZoomScreen(
             val sizeByWidth = maxWidth.value * 0.85f / charCount
             val sizeByHeight = maxHeight.value * 0.85f
             val autoSizeDpValue = min(sizeByWidth, sizeByHeight)
-            val density = LocalDensity.current
+            val density = androidx.compose.ui.platform.LocalDensity.current
             val autoSizeSp = with(density) { (autoSizeDpValue / fontScale).sp }
-            val strokeModeCanvasTopInset = with(density) {
-                strokeModeCardHeightPx.toDp() + 36.dp
-            }
             val textColor = MaterialTheme.colorScheme.onSurface
             val helperColor = MaterialTheme.colorScheme.onSurfaceVariant
 
             if (isStrokeMode) {
-                Box(
+                Column(
                     modifier = Modifier.fillMaxSize(),
-                    contentAlignment = Alignment.Center,
+                    horizontalAlignment = Alignment.CenterHorizontally,
                 ) {
-                    when {
-                        hasStrokeData -> {
-                            StrokeOrderCanvas(
-                                strokeData = requireNotNull(uiState.strokeCharacterData),
-                                playbackVersion = uiState.strokePlaybackVersion,
-                                modifier = Modifier
-                                    .fillMaxSize()
-                                    .padding(top = strokeModeCanvasTopInset, bottom = 24.dp),
-                            )
-                        }
-
-                        displayText.isEmpty() -> {
-                            Text(
-                                text = "上の入力欄に漢字を入力",
-                                fontSize = 24.sp,
-                                color = helperColor.copy(alpha = 0.5f),
-                            )
-                        }
-
-                        else -> {
-                            Text(
-                                text = uiState.activeCharacter.orEmpty(),
-                                fontSize = autoSizeSp,
-                                fontFamily = FontFamily.Serif,
-                                color = helperColor.copy(alpha = 0.28f),
-                            )
-                        }
-                    }
-
                     StrokeModeTargetCard(
                         inputText = uiState.inputText,
                         inputCharacters = uiState.inputCharacters,
@@ -184,17 +148,54 @@ fun KanjiZoomScreen(
                         onCharacterSelected = viewModel::onActiveCharacterSelected,
                         onReplayRequested = viewModel::onReplayRequested,
                         modifier = Modifier
-                            .align(Alignment.TopCenter)
-                            .padding(start = 8.dp, top = 20.dp, end = 8.dp),
-                        onHeightChanged = { strokeModeCardHeightPx = it },
+                            .fillMaxWidth()
+                            .padding(top = 20.dp),
                     )
+                    Spacer(modifier = Modifier.height(16.dp))
+
+                    Box(
+                        modifier = Modifier
+                            .weight(1f)
+                            .fillMaxWidth(),
+                        contentAlignment = Alignment.Center,
+                    ) {
+                        when {
+                            hasStrokeData -> {
+                                StrokeOrderCanvas(
+                                    strokeData = requireNotNull(uiState.strokeCharacterData),
+                                    playbackVersion = uiState.strokePlaybackVersion,
+                                    modifier = Modifier
+                                        .fillMaxSize()
+                                        .padding(bottom = 8.dp),
+                                )
+                            }
+
+                            displayText.isEmpty() -> {
+                                Text(
+                                    text = "上の入力欄に漢字を入力",
+                                    fontSize = 24.sp,
+                                    color = helperColor.copy(alpha = 0.5f),
+                                )
+                            }
+
+                            else -> {
+                                Text(
+                                    text = uiState.activeCharacter.orEmpty(),
+                                    fontSize = autoSizeSp,
+                                    fontFamily = FontFamily.Serif,
+                                    color = helperColor.copy(alpha = 0.28f),
+                                )
+                            }
+                        }
+                    }
 
                     if (!uiState.strokeFallbackMessage.isNullOrEmpty()) {
+                        Spacer(modifier = Modifier.height(12.dp))
                         Text(
                             text = uiState.strokeFallbackMessage.orEmpty(),
                             modifier = Modifier
-                                .align(Alignment.BottomCenter)
-                                .padding(16.dp),
+                                .fillMaxWidth()
+                                .padding(horizontal = 8.dp),
                             textAlign = TextAlign.Center,
                             color = helperColor,
                             style = MaterialTheme.typography.bodySmall,
@@ -336,13 +337,10 @@ private fun StrokeModeTargetCard(
     onValueChange: (String) -> Unit,
     onCharacterSelected: (Int) -> Unit,
     onReplayRequested: () -> Unit,
-    onHeightChanged: (Int) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Surface(
-        modifier = modifier
-            .fillMaxWidth()
-            .onSizeChanged { onHeightChanged(it.height) },
+        modifier = modifier.fillMaxWidth(),
         shape = MaterialTheme.shapes.large,
         color = MaterialTheme.colorScheme.surface.copy(alpha = 0.92f),
         tonalElevation = 3.dp,

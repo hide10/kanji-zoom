@@ -1,8 +1,10 @@
 package com.hide10.kanjizoom.stroke
 
 import android.content.res.AssetManager
+import android.util.Log
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import java.io.FileNotFoundException
 
 sealed interface StrokeDataLoadResult {
     data class Loaded(val strokeData: StrokeCharacterData) : StrokeDataLoadResult
@@ -39,15 +41,27 @@ class AssetStrokeOrderRepository(
 
     private fun loadStrokeData(character: String): StrokeDataLoadResult {
         val assetPath = "strokes/${character.toCodePointHex()}.svg"
-        val svgContent = runCatching {
+        val svgContent = try {
             assetManager.open(assetPath).bufferedReader().use { it.readText() }
-        }.getOrNull() ?: return StrokeDataLoadResult.MissingAsset
+        } catch (_: FileNotFoundException) {
+            return StrokeDataLoadResult.MissingAsset
+        } catch (error: Throwable) {
+            Log.e(TAG, "Failed to read stroke asset: $assetPath", error)
+            return StrokeDataLoadResult.ParseFailure(error)
+        }
 
         return runCatching {
             StrokeDataParser.parseSvg(svgContent, character)
         }.fold(
             onSuccess = { StrokeDataLoadResult.Loaded(it) },
-            onFailure = { StrokeDataLoadResult.ParseFailure(it) },
+            onFailure = {
+                Log.e(TAG, "Failed to parse stroke asset: $assetPath", it)
+                StrokeDataLoadResult.ParseFailure(it)
+            },
         )
+    }
+
+    private companion object {
+        const val TAG = "StrokeOrderRepository"
     }
 }

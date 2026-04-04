@@ -1,44 +1,40 @@
 package com.hide10.kanjizoom.stroke
 
-import org.w3c.dom.Element
-import org.xml.sax.EntityResolver
-import org.xml.sax.InputSource
-import java.io.StringReader
-import javax.xml.XMLConstants
-import javax.xml.parsers.DocumentBuilderFactory
-
 object StrokeDataParser {
+    private val viewBoxRegex = Regex(
+        pattern = """<svg\b[^>]*\bviewBox\s*=\s*(['"])(.*?)\1""",
+        options = setOf(RegexOption.IGNORE_CASE, RegexOption.DOT_MATCHES_ALL),
+    )
+    private val pathRegex = Regex(
+        pattern = """<path\b[^>]*\bd\s*=\s*(['"])(.*?)\1[^>]*?/?>""",
+        options = setOf(RegexOption.IGNORE_CASE, RegexOption.DOT_MATCHES_ALL),
+    )
+
     fun parseSvgOrNull(svgContent: String, character: String): StrokeCharacterData? =
         runCatching { parseSvg(svgContent, character) }.getOrNull()
 
     fun parseSvg(svgContent: String, character: String): StrokeCharacterData {
-        val factory = DocumentBuilderFactory.newInstance().apply {
-            isNamespaceAware = false
-            isXIncludeAware = false
-            setExpandEntityReferences(false)
+        val viewBoxValues = requireNotNull(viewBoxRegex.find(svgContent)?.groupValues?.getOrNull(2)) {
+            "Missing viewBox attribute"
         }
-        configureSecureXmlParsing(factory)
-        val document = factory.newDocumentBuilder().apply {
-            setEntityResolver(EntityResolver { _, _ -> InputSource(StringReader("")) })
-        }.parse(InputSource(StringReader(svgContent)))
-        val root = document.documentElement ?: error("Missing svg root element")
-
-        val viewBoxValues = root.getAttribute("viewBox")
             .trim()
             .split(Regex("\\s+"))
             .map(String::toFloat)
         require(viewBoxValues.size == 4) { "Unexpected viewBox format" }
 
-        val pathNodes = root.getElementsByTagName("path")
-        val strokes = buildList {
-            for (index in 0 until pathNodes.length) {
-                val node = pathNodes.item(index) as? Element ?: continue
-                val pathData = node.getAttribute("d").trim()
-                if (pathData.isNotEmpty()) {
-                    add(StrokePathData(order = size + 1, pathData = pathData))
+        val strokes = pathRegex.findAll(svgContent)
+            .mapNotNull { match ->
+                val pathData = decodeXmlAttribute(match.groupValues[2].trim())
+                if (pathData.isEmpty()) {
+                    null
+                } else {
+                    StrokePathData(order = 0, pathData = pathData)
                 }
             }
-        }
+            .mapIndexed { index, stroke ->
+                stroke.copy(order = index + 1)
+            }
+            .toList()
 
         require(strokes.isNotEmpty()) { "No stroke paths found" }
 
@@ -50,20 +46,10 @@ object StrokeDataParser {
         )
     }
 
-    private fun configureSecureXmlParsing(factory: DocumentBuilderFactory) {
-        setFeatureIfSupported(factory, XMLConstants.FEATURE_SECURE_PROCESSING, true)
-        setFeatureIfSupported(factory, "http://xml.org/sax/features/external-general-entities", false)
-        setFeatureIfSupported(factory, "http://xml.org/sax/features/external-parameter-entities", false)
-        setFeatureIfSupported(factory, "http://apache.org/xml/features/nonvalidating/load-external-dtd", false)
-    }
-
-    private fun setFeatureIfSupported(
-        factory: DocumentBuilderFactory,
-        feature: String,
-        enabled: Boolean,
-    ) {
-        runCatching {
-            factory.setFeature(feature, enabled)
-        }
-    }
+    private fun decodeXmlAttribute(value: String): String = value
+        .replace("&quot;", "\"")
+        .replace("&apos;", "'")
+        .replace("&lt;", "<")
+        .replace("&gt;", ">")
+        .replace("&amp;", "&")
 }
