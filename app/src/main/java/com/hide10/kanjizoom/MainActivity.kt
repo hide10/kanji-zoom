@@ -285,7 +285,7 @@ fun KanjiZoomScreen(
         }
         AlertDialog(
             onDismissRequest = { showInfoDialog = false },
-            title = { Text("漢字ズーム") },
+            title = { Text("漢字拡大") },
             text = {
                 Column {
                     Text("バージョン: $versionName")
