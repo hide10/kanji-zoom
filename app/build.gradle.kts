@@ -23,8 +23,8 @@ android {
         applicationId = "com.hide10.kanjizoom"
         minSdk = 26
         targetSdk = 36
-        versionCode = 9
-        versionName = "1.1.7"
+        versionCode = 10
+        versionName = "1.1.8"
     }
 
     signingConfigs {
