@@ -4,6 +4,12 @@
 
 ## ダウンロード
 
+Google Play で公開しています（完全無料）。
+
+[Google Play で入手](https://play.google.com/store/apps/details?id=com.hide10.kanjizoom)
+
+GitHub Releases から APK を直接ダウンロードすることもできます。
+
 [Releases ページ](https://github.com/hide10/kanji-zoom/releases) から最新の APK をダウンロードできます。
 
 ### APK インストール時の注意
